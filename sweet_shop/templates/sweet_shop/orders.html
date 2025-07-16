@@ -1,0 +1,16 @@
+<!-- sweet_shop/templates/sweet_shop/orders.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>All Orders</title>
+</head>
+<body>
+    <h1>Orders Placed</h1>
+{% for order in orders %}
+    <p>{{ order.user.username }} ordered {{ order.quantity }} × {{ order.sweet.name }} on {{ order.ordered_at }}</p>
+{% empty %}
+    <p>No orders yet.</p>
+{% endfor %}
+
+</body>
+</html>

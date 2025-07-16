@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Kata Sweet Shop</title>
+</head>
+<body>
+    <h1>Available Sweets</h1>
+
+    <!-- ✅ Show success/error messages -->
+    {% if messages %}
+    <ul style="color: green;">
+        {% for message in messages %}
+            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+    {% for sweet in sweets %}
+        <div style="margin-bottom: 20px;">
+            <h3>{{ sweet.name }}</h3>
+            <p>{{ sweet.description }}</p>
+            <p>Price: ₹{{ sweet.price }}</p>
+          <p><strong>Available:</strong> {{ sweet.quantity_available }}</p>
+
+
+            {% if sweet.image %}
+                <img src="{{ sweet.image.url }}" width="150" />
+            {% endif %}
+
+            {% if user.is_authenticated %}
+                <form method="post" action="{% url 'place_order' sweet.id %}">
+                    {% csrf_token %}
+                    <label for="quantity_{{ sweet.id }}">Quantity:</label>
+                    <input type="number" name="quantity" id="quantity_{{ sweet.id }}" min="1" value="1">
+                    <button type="submit">Order</button>
+                </form>
+            {% else %}
+                <p><a href="{% url 'login' %}">Login</a> to place order.</p>
+            {% endif %}
+        </div>
+    {% empty %}
+        <p>No sweets available.</p>
+    {% endfor %}
+
+    <hr>
+
+    {% if user.is_authenticated %}
+        <p>Welcome, {{ user.username }} |
+        <a href="{% url 'view_orders' %}">My Orders</a> |
+        <a href="{% url 'logout' %}">Logout</a></p>
+    {% else %}
+        <a href="{% url 'login' %}">Login</a> | <a href="{% url 'register' %}">Register</a>
+    {% endif %}
+</body>
+</html>
