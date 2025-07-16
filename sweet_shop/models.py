@@ -17,7 +17,7 @@ class Sweet(models.Model):
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    sweet = models.ForeignKey(Sweet, on_delete=models.CASCADE)
+    sweet = models.ForeignKey(Sweet, on_delete=models.PROTECT)  # ✅ Prevent deletion
     quantity = models.PositiveIntegerField(default=1)
     ordered_at = models.DateTimeField(auto_now_add=True)
 

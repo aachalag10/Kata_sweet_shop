@@ -45,8 +45,12 @@ def place_order(request, sweet_id):
     if request.method == 'POST':
         quantity = int(request.POST.get('quantity', 1))
 
+        # ✅ Check for valid positive quantity
+        if quantity <= 0:
+            messages.error(request, "Please enter a valid quantity greater than 0.")
+            return redirect('home')
+
         if sweet.quantity_available >= quantity:
-            # Place the order
             Order.objects.create(user=request.user, sweet=sweet, quantity=quantity)
             sweet.quantity_available -= quantity
             sweet.save()
