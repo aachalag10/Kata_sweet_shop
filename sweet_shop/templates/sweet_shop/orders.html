@@ -56,6 +56,20 @@
             margin-top: 40px;
             font-size: 1.2rem;
         }
+
+         .auth-links {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 
@@ -86,6 +100,17 @@
     {% else %}
     <p class="empty-msg">No orders yet.</p>
     {% endif %}
+
+     <div class="auth-links">
+        {% if user.is_authenticated %}
+       <p>Welcome, {{ user.username }} |
+            <a href="{% url 'view_orders' %}">My Orders</a> | 
+            <a href="{% url 'home' %}">Products</a>
+        </p>
+        {% else %}
+        <a href="{% url 'login' %}">Login</a> | <a href="{% url 'register' %}">Register</a>
+        {% endif %}
+    </div>
 </body>
 
 </html>

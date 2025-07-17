@@ -9,7 +9,7 @@ class Sweet(models.Model):
     description = models.TextField()
     price = models.DecimalField(max_digits=6, decimal_places=2)
     image = models.ImageField(upload_to='sweet_images/', blank=True, null=True)
-    quantity_available = models.PositiveIntegerField(default=0)  # 👈 Add this line
+    quantity_available = models.PositiveIntegerField(default=0) 
 
     def __str__(self):
         return self.name
@@ -17,7 +17,7 @@ class Sweet(models.Model):
 
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    sweet = models.ForeignKey(Sweet, on_delete=models.PROTECT)  # ✅ Prevent deletion
+    sweet = models.ForeignKey(Sweet, on_delete=models.PROTECT)  
     quantity = models.PositiveIntegerField(default=1)
     ordered_at = models.DateTimeField(auto_now_add=True)
 

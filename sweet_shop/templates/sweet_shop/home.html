@@ -3,123 +3,163 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>All Orders</title>
+    <title>Kata Sweet Shop</title>
     <style>
         body {
-            font-family: 'Segoe UI', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
             background-color: #f9f9f9;
-            margin: 0;
-            padding: 0;
-        }
-
-        /* Navbar styles */
-        .navbar {
-            background-color: #4CAF50;
-            overflow: hidden;
-            padding: 0 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .navbar a {
-            color: white;
-            text-decoration: none;
-            padding: 14px 20px;
-            display: inline-block;
-            transition: background-color 0.3s ease;
-        }
-
-        .navbar a:hover {
-            background-color: #45a049;
         }
 
         h1 {
-            color: #333;
             text-align: center;
-            margin-top: 30px;
+            margin-bottom: 40px;
+            color: #cc3366;
         }
 
-        table {
-            width: 90%;
-            margin: 30px auto;
-            border-collapse: collapse;
-            background-color: #fff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
+        .sweet-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
         }
 
-        th, td {
-            padding: 15px 20px;
+        .card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 280px;
+            padding: 20px;
             text-align: center;
+            transition: transform 0.2s ease;
         }
 
-        th {
-            background-color: #4CAF50;
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .price {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .stock {
+            font-weight: bold;
+            margin: 5px 0;
+        }
+
+        .out-of-stock {
+            color: gray;
+        }
+
+        .order-form input[type="number"] {
+            width: 60px;
+            padding: 5px;
+            margin-right: 10px;
+        }
+
+        .order-form button {
+            padding: 7px 15px;
+            background-color: #cc3366;
             color: white;
-            font-weight: 600;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
 
-        tr:nth-child(even) {
-            background-color: #f2f2f2;
+        .order-form button:hover {
+            background-color: #b02a57;
         }
 
-        tr:hover {
-            background-color: #e6ffe6;
-        }
-
-        td {
-            color: #555;
-        }
-
-        .empty-msg {
+        .message-list {
+            color: green;
             text-align: center;
-            color: #777;
+            margin-bottom: 20px;
+        }
+
+        .auth-links {
+            text-align: center;
             margin-top: 40px;
-            font-size: 1.2rem;
+        }
+
+        a {
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 
 <body>
+    <h1>Kata Sweet Shop</h1>
 
-    <!-- Navbar -->
-    <div class="navbar">
-        <div>
-            <a href="{% url 'orders' %}">Orders</a>
-            <a href="{% url 'products' %}">Products</a>
-        </div>
-    </div>
-
-    <!-- Content -->
-    <h1>Orders Placed</h1>
-
-    {% if orders %}
-    <table>
-        <thead>
-            <tr>
-                <th>User</th>
-                <th>Sweet</th>
-                <th>Quantity</th>
-                <th>Ordered At</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for order in orders %}
-            <tr>
-                <td>{{ order.user.username }}</td>
-                <td>{{ order.sweet.name }}</td>
-                <td>{{ order.quantity }}</td>
-                <td>{{ order.ordered_at|date:"d M Y, H:i A" }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% else %}
-    <p class="empty-msg">No orders yet.</p>
+    {% if messages %}
+    <ul class="message-list">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
     {% endif %}
 
+    <div class="sweet-container">
+        {% for sweet in sweets %}
+        <div class="card">
+            <h3>{{ sweet.name }}</h3>
+            <!-- {% if sweet.image %} -->
+            <!-- <img src="{{ sweet.image.url }}" alt="{{ sweet.name }}"> -->
+            <!-- <img src="https://tse1.mm.bing.net/th/id/OIP.rBHCs0LkBG6Czg-HMki_yQHaEK?rs=1&pid=ImgDetMain&o=7&rm=3" alt="{{ sweet.name }}"> -->
+            <!-- {% endif %} -->
+            <p>{{ sweet.description }}</p>
+            <p class="price">₹{{ sweet.price }}</p>
+            <p class="stock">
+                Available: 
+                {% if sweet.quantity_available > 0 %}
+                    {{ sweet.quantity_available }}
+                {% else %}
+                    <span class="out-of-stock">Out of Stock</span>
+                {% endif %}
+            </p>
+
+            {% if sweet.quantity_available > 0 %}
+                {% if user.is_authenticated %}
+                <form class="order-form" method="post" action="{% url 'place_order' sweet.id %}">
+                    {% csrf_token %}
+                    <input type="number" name="quantity" min="1" max="{{ sweet.quantity_available }}" value="1">
+                    <button type="submit">Order</button>
+                </form>
+                {% else %}
+                <p><a href="{% url 'login' %}">Login</a> to place order.</p>
+                {% endif %}
+            {% else %}
+            <p style="font-weight: bold; color: gray;">Out of stock</p>
+            {% endif %}
+        </div>
+        {% empty %}
+        <p>No sweets available.</p>
+        {% endfor %}
+    </div>
+
+    <div class="auth-links">
+        {% if user.is_authenticated %}
+        <p>Welcome, {{ user.username }} |
+            <a href="{% url 'view_orders' %}">My Orders</a> | 
+            <a href="{% url 'home' %}">Products</a>
+        </p>
+        {% else %}
+        <a href="{% url 'login' %}">Login</a> | <a href="{% url 'register' %}">Register</a>
+        {% endif %}
+    </div>
 </body>
 
 </html>
