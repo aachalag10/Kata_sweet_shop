@@ -1,16 +1,91 @@
 <!-- sweet_shop/templates/sweet_shop/orders.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
+    <meta charset="UTF-8">
     <title>All Orders</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        table {
+            width: 90%;
+            margin: 30px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px 20px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e6ffe6;
+        }
+
+        td {
+            color: #555;
+        }
+
+        .empty-msg {
+            text-align: center;
+            color: #777;
+            margin-top: 40px;
+            font-size: 1.2rem;
+        }
+    </style>
 </head>
+
 <body>
     <h1>Orders Placed</h1>
-{% for order in orders %}
-    <p>{{ order.user.username }} ordered {{ order.quantity }} × {{ order.sweet.name }} on {{ order.ordered_at }}</p>
-{% empty %}
-    <p>No orders yet.</p>
-{% endfor %}
 
+    {% if orders %}
+    <table>
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Sweet</th>
+                <th>Quantity</th>
+                <th>Ordered At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.user.username }}</td>
+                <td>{{ order.sweet.name }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>{{ order.ordered_at|date:"d M Y, H:i A" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p class="empty-msg">No orders yet.</p>
+    {% endif %}
 </body>
+
 </html>

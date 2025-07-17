@@ -1,55 +1,125 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Kata Sweet Shop</title>
+    <meta charset="UTF-8">
+    <title>All Orders</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Navbar styles */
+        .navbar {
+            background-color: #4CAF50;
+            overflow: hidden;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar a {
+            color: white;
+            text-decoration: none;
+            padding: 14px 20px;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar a:hover {
+            background-color: #45a049;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        table {
+            width: 90%;
+            margin: 30px auto;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 15px 20px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e6ffe6;
+        }
+
+        td {
+            color: #555;
+        }
+
+        .empty-msg {
+            text-align: center;
+            color: #777;
+            margin-top: 40px;
+            font-size: 1.2rem;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Available Sweets</h1>
 
-    <!-- ✅ Show success/error messages -->
-    {% if messages %}
-    <ul style="color: green;">
-        {% for message in messages %}
-            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-        {% endfor %}
-    </ul>
-{% endif %}
-
-    {% for sweet in sweets %}
-        <div style="margin-bottom: 20px;">
-            <h3>{{ sweet.name }}</h3>
-            <p>{{ sweet.description }}</p>
-            <p>Price: ₹{{ sweet.price }}</p>
-          <p><strong>Available:</strong> {{ sweet.quantity_available }}</p>
-
-
-            {% if sweet.image %}
-                <img src="{{ sweet.image.url }}" width="150" />
-            {% endif %}
-
-            {% if user.is_authenticated %}
-                <form method="post" action="{% url 'place_order' sweet.id %}">
-                    {% csrf_token %}
-                    <label for="quantity_{{ sweet.id }}">Quantity:</label>
-                    <input type="number" name="quantity" id="quantity_{{ sweet.id }}" min="1" value="1">
-                    <button type="submit">Order</button>
-                </form>
-            {% else %}
-                <p><a href="{% url 'login' %}">Login</a> to place order.</p>
-            {% endif %}
+    <!-- Navbar -->
+    <div class="navbar">
+        <div>
+            <a href="{% url 'orders' %}">Orders</a>
+            <a href="{% url 'products' %}">Products</a>
         </div>
-    {% empty %}
-        <p>No sweets available.</p>
-    {% endfor %}
+    </div>
 
-    <hr>
+    <!-- Content -->
+    <h1>Orders Placed</h1>
 
-    {% if user.is_authenticated %}
-        <p>Welcome, {{ user.username }} |
-        <a href="{% url 'view_orders' %}">My Orders</a> |
-        <a href="{% url 'logout' %}">Logout</a></p>
+    {% if orders %}
+    <table>
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Sweet</th>
+                <th>Quantity</th>
+                <th>Ordered At</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td>{{ order.user.username }}</td>
+                <td>{{ order.sweet.name }}</td>
+                <td>{{ order.quantity }}</td>
+                <td>{{ order.ordered_at|date:"d M Y, H:i A" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
     {% else %}
-        <a href="{% url 'login' %}">Login</a> | <a href="{% url 'register' %}">Register</a>
+    <p class="empty-msg">No orders yet.</p>
     {% endif %}
+
 </body>
+
 </html>

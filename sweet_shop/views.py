@@ -3,13 +3,20 @@ from .models import Sweet, Order
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login
+from django.http import HttpResponse
+from django.http import HttpResponseBadRequest
+from django.contrib import messages
+
+
+
 
 def home(request):
     sweets = Sweet.objects.all()
     return render(request, 'sweet_shop/home.html', {'sweets': sweets})
 
 # @login_required
-from django.http import HttpResponseBadRequest
 
 
 @login_required
@@ -36,7 +43,6 @@ def place_order(request, sweet_id):
 
     return redirect('home')
 
-from django.contrib import messages
 
 @login_required
 def place_order(request, sweet_id):
@@ -65,9 +71,6 @@ def view_orders(request):
     orders = Order.objects.all()
     return render(request, 'sweet_shop/orders.html', {'orders': orders})
 
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login
-from django.http import HttpResponse
 
 def register(request):
     if request.method == 'POST':
